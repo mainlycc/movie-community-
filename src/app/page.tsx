@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -10,8 +9,8 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Slider } from "@/components/ui/slider"
 import { Textarea } from "@/components/ui/textarea"
-import { Film, MessageSquare, ImageIcon, Upload, User, Mail, Star, Youtube, Instagram, Facebook, Twitter, Camera, Hash } from 'lucide-react'
-import Image from 'next/image';
+import { Star, Youtube, Instagram, Facebook, Twitter, Camera } from 'lucide-react'
+import Image from 'next/image'
 
 type User = {
   username: string;
