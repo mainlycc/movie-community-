@@ -72,27 +72,27 @@ const memeTemplates: MemeTemplate[] = [
 ]
 
 const popularMovies: PopularMovie[] = [
-  { id: 1, title: "Skazani na Shawshank", rating: 9.3 },
-  { id: 2, title: "Ojciec chrzestny", rating: 9.2 },
-  { id: 3, title: "Mroczny Rycerz", rating: 9.0 },
-  { id: 4, title: "Dwunastu gniewnych ludzi", rating: 8.9 },
-  { id: 5, title: "Lista Schindlera", rating: 8.9 },
+  { id: 1, title: 'Skazani na Shawshank', rating: 9.3 },
+  { id: 2, title: 'Ojciec chrzestny', rating: 9.2 },
+  { id: 3, title: 'Mroczny Rycerz', rating: 9.0 },
+  { id: 4, title: 'Dwunastu gniewnych ludzi', rating: 8.9 },
+  { id: 5, title: 'Lista Schindlera', rating: 8.9 },
 ]
 
 const favoriteQuotes: MovieQuote[] = [
-  { id: 1, quote: "Niech Moc będzie z tobą.", movie: "Gwiezdne wojny", character: "Różne postacie" },
-  { id: 2, quote: "Zrobię mu propozycję nie do odrzucenia.", movie: "Ojciec chrzestny", character: "Vito Corleone" },
-  { id: 3, quote: "Do mnie mówisz?", movie: "Taksówkarz", character: "Travis Bickle" },
-  { id: 4, quote: "Patrz mi w oczy, maleńka.", movie: "Casablanca", character: "Rick Blaine" },
-  { id: 5, quote: "Wrócę.", movie: "Terminator", character: "Terminator" },
+  { id: 1, quote: 'Niech Moc będzie z tobą.', movie: 'Gwiezdne wojny', character: 'Różne postacie' },
+  { id: 2, quote: 'Zrobię mu propozycję nie do odrzucenia.', movie: 'Ojciec chrzestny', character: 'Vito Corleone' },
+  { id: 3, quote: 'Do mnie mówisz?', movie: 'Taksówkarz', character: 'Travis Bickle' },
+  { id: 4, quote: 'Patrz mi w oczy, maleńka.', movie: 'Casablanca', character: 'Rick Blaine' },
+  { id: 5, quote: 'Wrócę.', movie: 'Terminator', character: 'Terminator' },
 ]
 
 const upcomingPremieres: UpcomingPremiere[] = [
-  { id: 1, title: "Diuna: Część druga", releaseDate: "1 marca 2024", genre: "Sci-Fi" },
-  { id: 2, title: "Godzilla x Kong: Nowe imperium", releaseDate: "12 kwietnia 2024", genre: "Akcja" },
-  { id: 3, title: "Furiosa: Saga Mad Max", releaseDate: "24 maja 2024", genre: "Akcja" },
-  { id: 4, title: "W głowie się nie mieści 2", releaseDate: "14 czerwca 2024", genre: "Animacja" },
-  { id: 5, title: "Deadpool 3", releaseDate: "26 lipca 2024", genre: "Akcja/Komedia" },
+  { id: 1, title: 'Diuna: Część druga', releaseDate: '1 marca 2024', genre: 'Sci-Fi' },
+  { id: 2, title: 'Godzilla x Kong: Nowe imperium', releaseDate: '12 kwietnia 2024', genre: 'Akcja' },
+  { id: 3, title: 'Furiosa: Saga Mad Max', releaseDate: '24 maja 2024', genre: 'Akcja' },
+  { id: 4, title: 'W głowie się nie mieści 2', releaseDate: '14 czerwca 2024', genre: 'Animacja' },
+  { id: 5, title: 'Deadpool 3', releaseDate: '26 lipca 2024', genre: 'Akcja/Komedia' },
 ]
 
 export default function Home() {
