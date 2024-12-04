@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -9,8 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Slider } from "@/components/ui/slider"
 import { Textarea } from "@/components/ui/textarea"
-import { Star, Youtube, Instagram, Facebook, Twitter, Camera } from 'lucide-react'
-import Image from 'next/image'
+import { Film, MessageSquare, ImageIcon, Upload, User, Mail, Star, Youtube, Instagram, Facebook, Twitter, Camera, Hash } from 'lucide-react'
 
 type User = {
   username: string;
@@ -54,15 +54,6 @@ type Meme = {
   author: string;
 }
 
-type Quiz = {
-  id: string;
-  question: string;
-  options: string[];
-  correctAnswer: string;
-  movie: string;
-  author: string;
-}
-
 const memeTemplates: MemeTemplate[] = [
   { id: '1', name: 'Drake Hotline Bling', url: '/placeholder.svg?height=300&width=300' },
   { id: '2', name: 'Two Buttons', url: '/placeholder.svg?height=300&width=300' },
@@ -72,58 +63,34 @@ const memeTemplates: MemeTemplate[] = [
 ]
 
 const popularMovies: PopularMovie[] = [
-  { id: 1, title: 'Skazani na Shawshank', rating: 9.3 },
-  { id: 2, title: 'Ojciec chrzestny', rating: 9.2 },
-  { id: 3, title: 'Mroczny Rycerz', rating: 9.0 },
-  { id: 4, title: 'Dwunastu gniewnych ludzi', rating: 8.9 },
-  { id: 5, title: 'Lista Schindlera', rating: 8.9 },
+  { id: 1, title: "Skazani na Shawshank", rating: 9.3 },
+  { id: 2, title: "Ojciec chrzestny", rating: 9.2 },
+  { id: 3, title: "Mroczny Rycerz", rating: 9.0 },
+  { id: 4, title: "Dwunastu gniewnych ludzi", rating: 8.9 },
+  { id: 5, title: "Lista Schindlera", rating: 8.9 },
 ]
 
 const favoriteQuotes: MovieQuote[] = [
-  { id: 1, quote: 'Niech Moc będzie z tobą.', movie: 'Gwiezdne wojny', character: 'Różne postacie' },
-  { id: 2, quote: 'Zrobię mu propozycję nie do odrzucenia.', movie: 'Ojciec chrzestny', character: 'Vito Corleone' },
-  { id: 3, quote: 'Do mnie mówisz?', movie: 'Taksówkarz', character: 'Travis Bickle' },
-  { id: 4, quote: 'Patrz mi w oczy, maleńka.', movie: 'Casablanca', character: 'Rick Blaine' },
-  { id: 5, quote: 'Wrócę.', movie: 'Terminator', character: 'Terminator' },
+  { id: 1, quote: "Niech Moc będzie z tobą.", movie: "Gwiezdne wojny", character: "Różne postacie" },
+  { id: 2, quote: "Zrobię mu propozycję nie do odrzucenia.", movie: "Ojciec chrzestny", character: "Vito Corleone" },
+  { id: 3, quote: "Do mnie mówisz?", movie: "Taksówkarz", character: "Travis Bickle" },
+  { id: 4, quote: "Patrz mi w oczy, maleńka.", movie: "Casablanca", character: "Rick Blaine" },
+  { id: 5, quote: "Wrócę.", movie: "Terminator", character: "Terminator" },
 ]
 
 const upcomingPremieres: UpcomingPremiere[] = [
-  { id: 1, title: 'Diuna: Część druga', releaseDate: '1 marca 2024', genre: 'Sci-Fi' },
-  { id: 2, title: 'Godzilla x Kong: Nowe imperium', releaseDate: '12 kwietnia 2024', genre: 'Akcja' },
-  { id: 3, title: 'Furiosa: Saga Mad Max', releaseDate: '24 maja 2024', genre: 'Akcja' },
-  { id: 4, title: 'W głowie się nie mieści 2', releaseDate: '14 czerwca 2024', genre: 'Animacja' },
-  { id: 5, title: 'Deadpool 3', releaseDate: '26 lipca 2024', genre: 'Akcja/Komedia' },
+  { id: 1, title: "Diuna: Część druga", releaseDate: "1 marca 2024", genre: "Sci-Fi" },
+  { id: 2, title: "Godzilla x Kong: Nowe imperium", releaseDate: "12 kwietnia 2024", genre: "Akcja" },
+  { id: 3, title: "Furiosa: Saga Mad Max", releaseDate: "24 maja 2024", genre: "Akcja" },
+  { id: 4, title: "W głowie się nie mieści 2", releaseDate: "14 czerwca 2024", genre: "Animacja" },
+  { id: 5, title: "Deadpool 3", releaseDate: "26 lipca 2024", genre: "Akcja/Komedia" },
 ]
 
-export default function Home() {
+export default function CytatyZFilmow() {
   const [activeTab, setActiveTab] = useState('home')
   const [memeText, setMemeText] = useState('')
   const [memeImage, setMemeImage] = useState<string | null>(null)
   const [createdMemes, setCreatedMemes] = useState<Meme[]>([])
-  const [quizzes, setQuizzes] = useState<Quiz[]>([
-    {
-      id: '1',
-      question: 'Kto powiedział: &ldquo;Niech Moc będzie z tobą&rdquo;?',
-      options: ['Luke Skywalker', 'Obi-Wan Kenobi', 'Yoda', 'Han Solo'],
-      correctAnswer: 'Obi-Wan Kenobi',
-      movie: 'Gwiezdne Wojny',
-      author: 'Admin'
-    },
-    {
-      id: '2',
-      question: 'Z jakiego filmu pochodzi cytat: &ldquo;Życie jest jak pudełko czekoladek - nigdy nie wiesz, co ci się trafi&rdquo;?',
-      options: ['Forrest Gump', 'Czekolada', 'Charlie i fabryka czekoladek', 'Amelia'],
-      correctAnswer: 'Forrest Gump',
-      movie: 'Forrest Gump',
-      author: 'Admin'
-    }
-  ])
-  const [newQuiz, setNewQuiz] = useState<Omit<Quiz, 'id' | 'author'>>({
-    question: '',
-    options: ['', '', '', ''],
-    correctAnswer: '',
-    movie: ''
-  })
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [user, setUser] = useState<User | null>(null)
   const [loginUsername, setLoginUsername] = useState('')
@@ -146,7 +113,7 @@ export default function Home() {
     if (canvasRef.current && (memeImage || selectedTemplate)) {
       const ctx = canvasRef.current.getContext('2d')
       if (ctx) {
-        const img = document.createElement('img')
+        const img = new Image()
         img.onload = () => {
           ctx.clearRect(0, 0, 300, 300)
           const scale = imageScale / 100
@@ -303,31 +270,12 @@ export default function Home() {
     setMemeHashtags(hashtags)
   }
 
-  const handleAddQuiz = () => {
-    if (user && newQuiz.question && newQuiz.options.every(option => option) && newQuiz.correctAnswer && newQuiz.movie) {
-      const quiz: Quiz = {
-        id: Date.now().toString(),
-        ...newQuiz,
-        author: user.username
-      }
-      setQuizzes(prevQuizzes => [...prevQuizzes, quiz])
-      setNewQuiz({
-        question: '',
-        options: ['', '', '', ''],
-        correctAnswer: '',
-        movie: ''
-      })
-    } else {
-      alert('Proszę wypełnić wszystkie pola quizu.')
-    }
-  }
-
   const renderContent = () => {
     switch (activeTab) {
       case 'home':
         return (
           <div className="space-y-8">
-            <Card className="bg-gray-800 text-white">
+            <Card>
               <CardHeader>
                 <CardTitle>Witaj w Cytaty z filmów</CardTitle>
                 <CardDescription>Twoja społeczność dla wszystkiego, co związane z kinem</CardDescription>
@@ -347,7 +295,7 @@ export default function Home() {
                 </ul>
               </CardContent>
             </Card>
-            <Card className="bg-gray-800 text-white">
+            <Card>
               <CardHeader>
                 <CardTitle>Ulubione cytaty filmowe tygodnia</CardTitle>
               </CardHeader>
@@ -356,13 +304,13 @@ export default function Home() {
                   {favoriteQuotes.map((quote) => (
                     <li key={quote.id} className="border-b pb-2 last:border-b-0 last:pb-0">
                       <p className="italic">"{quote.quote}"</p>
-                      <p className="text-sm text-gray-400">- {quote.character}, {quote.movie}</p>
+                      <p className="text-sm text-gray-600">- {quote.character}, {quote.movie}</p>
                     </li>
                   ))}
                 </ul>
               </CardContent>
             </Card>
-            <Card className="bg-gray-800 text-white">
+            <Card>
               <CardHeader>
                 <CardTitle>Nadchodzące premiery</CardTitle>
               </CardHeader>
@@ -372,7 +320,7 @@ export default function Home() {
                     <li key={premiere.id} className="flex justify-between items-center">
                       <div>
                         <span className="font-semibold">{premiere.title}</span>
-                        <span className="text-sm text-gray-400 ml-2">({premiere.genre})</span>
+                        <span className="text-sm text-gray-600 ml-2">({premiere.genre})</span>
                       </div>
                       <span className="text-sm">{premiere.releaseDate}</span>
                     </li>
@@ -384,7 +332,7 @@ export default function Home() {
         )
       case 'discussions':
         return (
-          <Card className="bg-gray-800 text-white">
+          <Card>
             <CardHeader>
               <CardTitle>Najnowsze dyskusje</CardTitle>
               <CardDescription>Dołącz do rozmowy o twoich ulubionych filmach</CardDescription>
@@ -412,13 +360,13 @@ export default function Home() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button variant="ghost" className="text-white hover:text-red-500">Zobacz wszystkie dyskusje</Button>
+              <Button>Zobacz wszystkie dyskusje</Button>
             </CardFooter>
           </Card>
         )
       case 'meme-generator':
         return (
-          <Card className="bg-gray-800 text-white">
+          <Card>
             <CardHeader>
               <CardTitle>Generator memów</CardTitle>
               <CardDescription>Twórz i udostępniaj memy związane z filmami</CardDescription>
@@ -450,7 +398,7 @@ export default function Home() {
                         type="file"
                         accept="image/*"
                         onChange={handleImageUpload}
-                        className="bg-gray-700 text-white border-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100"
+                        className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100"
                       />
                     </div>
                   </div>
@@ -461,7 +409,6 @@ export default function Home() {
                       placeholder="Wpisz tekst mema"
                       value={memeText}
                       onChange={(e) => setMemeText(e.target.value)}
-                      className="bg-gray-700 text-white border-gray-600"
                     />
                   </div>
                   <div>
@@ -470,7 +417,6 @@ export default function Home() {
                       id="meme-hashtags"
                       placeholder="Np. #film #cytat #śmieszne"
                       onChange={handleHashtagChange}
-                      className="bg-gray-700 text-white border-gray-600"
                     />
                   </div>
                   <div>
@@ -504,18 +450,18 @@ export default function Home() {
               ) : (
                 <div className="text-center">
                   <p>Musisz być zalogowany, aby tworzyć memy.</p>
-                  <Button onClick={() => setActiveTab('login')} className="mt-4 text-white hover:text-red-500">Zaloguj się</Button>
+                  <Button onClick={() => setActiveTab('login')} className="mt-4">Zaloguj się</Button>
                 </div>
               )}
             </CardContent>
             <CardFooter>
-              {isLoggedIn && <Button onClick={handleGenerateMeme} className="text-white hover:text-red-500">Generuj mem</Button>}
+              {isLoggedIn && <Button onClick={handleGenerateMeme}>Generuj mem</Button>}
             </CardFooter>
           </Card>
         )
       case 'meme-wall':
         return (
-          <Card className="bg-gray-800 text-white">
+          <Card>
             <CardHeader>
               <CardTitle>Ściana memów</CardTitle>
               <CardDescription>Zobacz najnowsze memy stworzone przez społeczność</CardDescription>
@@ -524,18 +470,8 @@ export default function Home() {
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 {createdMemes.map((meme) => (
                   <div key={meme.id} className="space-y-2">
-                    <Image 
-                      src={meme.imageUrl} 
-                      alt={`Mem społeczności ${meme.id}`}
-                      width={300}
-                      height={300}
-                      className="w-full h-auto rounded-lg shadow-md"
-                    />
-                    <div>
-                      <p className="text-sm text-gray-400">Autor: {meme.author}</p>
-                      <p>Musisz być zalogowany, aby tworzyć memy.</p>
-                      <p>&ldquo;Życie jest jak pudełko czekoladek - nigdy nie wiesz, co ci się trafi&rdquo;</p>
-                    </div>
+                    <img src={meme.imageUrl} alt={`Mem społeczności ${meme.id}`} className="w-full h-auto rounded-lg shadow-md" />
+                    <p className="text-sm text-gray-600">Autor: {meme.author}</p>
                     <p className="text-sm">{meme.hashtags.join(' ')}</p>
                   </div>
                 ))}
@@ -543,96 +479,9 @@ export default function Home() {
             </CardContent>
           </Card>
         )
-      case 'quizzes':
-        return (
-          <Card className="bg-gray-800 text-white">
-            <CardHeader>
-              <CardTitle>Quizy o cytatach filmowych</CardTitle>
-              <CardDescription>Sprawdź swoją wiedzę o słynnych cytatach z filmów</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                {quizzes.map((quiz) => (
-                  <div key={quiz.id} className="bg-gray-700 p-4 rounded-lg">
-                    <h3 className="text-lg font-semibold mb-2">{quiz.question}</h3>
-                    <ul className="space-y-2">
-                      {quiz.options.map((option, index) => (
-                        <li key={index} className="flex items-center">
-                          <input
-                            type="radio"
-                            id={`quiz-${quiz.id}-option-${index}`}
-                            name={`quiz-${quiz.id}`}
-                            className="mr-2"
-                          />
-                          <label htmlFor={`quiz-${quiz.id}-option-${index}`}>{option}</label>
-                        </li>
-                      ))}
-                    </ul>
-                    <p className="mt-2 text-sm text-gray-400">Film: {quiz.movie}</p>
-                    <p className="text-sm text-gray-400">Autor: {quiz.author}</p>
-                  </div>
-                ))}
-              </div>
-              {isLoggedIn && (
-                <div className="mt-8">
-                  <h3 className="text-xl font-semibold mb-4">Dodaj nowy quiz</h3>
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="quiz-question">Pytanie</Label>
-                      <Input
-                        id="quiz-question"
-                        value={newQuiz.question}
-                        onChange={(e) => setNewQuiz({...newQuiz, question: e.target.value})}
-                        placeholder="Wpisz pytanie"
-                        className="bg-gray-700 text-white border-gray-600"
-                      />
-                    </div>
-                    {newQuiz.options.map((option, index) => (
-                      <div key={index}>
-                        <Label htmlFor={`quiz-option-${index}`}>Opcja {index + 1}</Label>
-                        <Input
-                          id={`quiz-option-${index}`}
-                          value={option}
-                          onChange={(e) => {
-                            const newOptions = [...newQuiz.options]
-                            newOptions[index] = e.target.value
-                            setNewQuiz({...newQuiz, options: newOptions})
-                          }}
-                          placeholder={`Wpisz opcję ${index + 1}`}
-                          className="bg-gray-700 text-white border-gray-600"
-                        />
-                      </div>
-                    ))}
-                    <div>
-                      <Label htmlFor="quiz-correct-answer">Poprawna odpowiedź</Label>
-                      <Input
-                        id="quiz-correct-answer"
-                        value={newQuiz.correctAnswer}
-                        onChange={(e) => setNewQuiz({...newQuiz, correctAnswer: e.target.value})}
-                        placeholder="Wpisz poprawną odpowiedź"
-                        className="bg-gray-700 text-white border-gray-600"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="quiz-movie">Film</Label>
-                      <Input
-                        id="quiz-movie"
-                        value={newQuiz.movie}
-                        onChange={(e) => setNewQuiz({...newQuiz, movie: e.target.value})}
-                        placeholder="Wpisz tytuł filmu"
-                        className="bg-gray-700 text-white border-gray-600"
-                      />
-                    </div>
-                    <Button onClick={handleAddQuiz} className="text-white hover:text-red-500">Dodaj quiz</Button>
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )
       case 'login':
         return (
-          <Card className="bg-gray-800 text-white">
+          <Card>
             <CardHeader>
               <CardTitle>Logowanie</CardTitle>
               <CardDescription>Witaj z powrotem! Zaloguj się na swoje konto.</CardDescription>
@@ -647,7 +496,6 @@ export default function Home() {
                     value={loginUsername}
                     onChange={(e) => setLoginUsername(e.target.value)}
                     required
-                    className="bg-gray-700 text-white border-gray-600"
                   />
                 </div>
                 <div className="space-y-2">
@@ -658,17 +506,16 @@ export default function Home() {
                     value={loginPassword}
                     onChange={(e) => setLoginPassword(e.target.value)}
                     required
-                    className="bg-gray-700 text-white border-gray-600"
                   />
                 </div>
-                <Button type="submit" className="text-white hover:text-red-500">Zaloguj się</Button>
+                <Button type="submit">Zaloguj się</Button>
               </form>
             </CardContent>
           </Card>
         )
       case 'register':
         return (
-          <Card className="bg-gray-800 text-white">
+          <Card>
             <CardHeader>
               <CardTitle>Rejestracja</CardTitle>
               <CardDescription>Stwórz nowe konto, aby dołączyć do naszej społeczności.</CardDescription>
@@ -683,7 +530,6 @@ export default function Home() {
                     value={registerUsername}
                     onChange={(e) => setRegisterUsername(e.target.value)}
                     required
-                    className="bg-gray-700 text-white border-gray-600"
                   />
                 </div>
                 <div className="space-y-2">
@@ -694,7 +540,6 @@ export default function Home() {
                     value={registerEmail}
                     onChange={(e) => setRegisterEmail(e.target.value)}
                     required
-                    className="bg-gray-700 text-white border-gray-600"
                   />
                 </div>
                 <div className="space-y-2">
@@ -705,17 +550,16 @@ export default function Home() {
                     value={registerPassword}
                     onChange={(e) => setRegisterPassword(e.target.value)}
                     required
-                    className="bg-gray-700 text-white border-gray-600"
                   />
                 </div>
-                <Button type="submit" className="text-white hover:text-red-500">Zarejestruj się</Button>
+                <Button type="submit">Zarejestruj się</Button>
               </form>
             </CardContent>
           </Card>
         )
       case 'profile':
         return (
-          <Card className="bg-gray-800 text-white">
+          <Card>
             <CardHeader>
               <CardTitle>Profil użytkownika</CardTitle>
               <CardDescription>Zarządzaj informacjami o swoim profilu</CardDescription>
@@ -730,7 +574,7 @@ export default function Home() {
                     </Avatar>
                     <div>
                       <h3 className="text-2xl font-bold">{user.username}</h3>
-                      <p className="text-gray-400">{user.email}</p>
+                      <p className="text-gray-500">{user.email}</p>
                     </div>
                   </div>
                   <div className="space-y-2">
@@ -739,7 +583,6 @@ export default function Home() {
                       id="bio"
                       value={user.bio}
                       onChange={handleBioChange}
-                      className="bg-gray-700 text-white border-gray-600"
                     />
                   </div>
                   <div>
@@ -750,7 +593,7 @@ export default function Home() {
                       ))}
                     </ul>
                   </div>
-                  <Button onClick={() => setActiveTab('profile-setup')} className="text-white hover:text-red-500">Edytuj profil</Button>
+                  <Button onClick={() => setActiveTab('profile-setup')}>Edytuj profil</Button>
                 </div>
               )}
             </CardContent>
@@ -758,7 +601,7 @@ export default function Home() {
         )
       case 'profile-setup':
         return (
-          <Card className="bg-gray-800 text-white">
+          <Card>
             <CardHeader>
               <CardTitle>Konfiguracja profilu</CardTitle>
               <CardDescription>Uzupełnij informacje o swoim profilu</CardDescription>
@@ -771,7 +614,7 @@ export default function Home() {
                     <AvatarFallback>{user?.username.slice(0, 2).toUpperCase()}</AvatarFallback>
                   </Avatar>
                   <div>
-                    <Button onClick={() => fileInputRef.current?.click()} variant="outline" className="text-white hover:text-red-500">
+                    <Button onClick={() => fileInputRef.current?.click()} variant="outline">
                       <Camera className="w-4 h-4 mr-2" />
                       Zmień zdjęcie
                     </Button>
@@ -793,9 +636,8 @@ export default function Home() {
                       value={newEmail}
                       onChange={(e) => setNewEmail(e.target.value)}
                       placeholder="Nowy adres email"
-                      className="bg-gray-700 text-white border-gray-600"
                     />
-                    <Button type="submit" className="text-white hover:text-red-500">Aktualizuj email</Button>
+                    <Button type="submit">Aktualizuj email</Button>
                   </div>
                 </form>
                 <form onSubmit={handlePasswordChange} className="space-y-2">
@@ -806,16 +648,14 @@ export default function Home() {
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     placeholder="Nowe hasło"
-                    className="bg-gray-700 text-white border-gray-600"
                   />
                   <Input
                     type="password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="Potwierdź nowe hasło"
-                    className="bg-gray-700 text-white border-gray-600"
                   />
-                  <Button type="submit" className="text-white hover:text-red-500">Aktualizuj hasło</Button>
+                  <Button type="submit">Aktualizuj hasło</Button>
                 </form>
                 <div className="space-y-2">
                   <Label htmlFor="bio">Bio</Label>
@@ -824,7 +664,6 @@ export default function Home() {
                     value={user?.bio}
                     onChange={handleBioChange}
                     placeholder="Opowiedz nam o sobie..."
-                    className="bg-gray-700 text-white border-gray-600"
                   />
                 </div>
                 <div className="space-y-2">
@@ -835,18 +674,17 @@ export default function Home() {
                       value={movie}
                       onChange={(e) => handleFavoriteMovieChange(index, e.target.value)}
                       placeholder={`Ulubiony film #${index + 1}`}
-                      className="bg-gray-700 text-white border-gray-600"
                     />
                   ))}
                 </div>
-                <Button onClick={handleProfileSetupComplete} className="text-white hover:text-red-500">Zapisz profil</Button>
+                <Button onClick={handleProfileSetupComplete}>Zapisz profil</Button>
               </div>
             </CardContent>
           </Card>
         )
       case 'contact':
         return (
-          <Card className="bg-gray-800 text-white">
+          <Card>
             <CardHeader>
               <CardTitle>Kontakt</CardTitle>
               <CardDescription>Skontaktuj się z zespołem Cytaty z filmów</CardDescription>
@@ -855,17 +693,17 @@ export default function Home() {
               <form className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="contact-name">Imię</Label>
-                  <Input id="contact-name" type="text" placeholder="Twoje imię" required className="bg-gray-700 text-white border-gray-600" />
+                  <Input id="contact-name" type="text" placeholder="Twoje imię" required />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="contact-email">Email</Label>
-                  <Input id="contact-email" type="email" placeholder="Twój email" required className="bg-gray-700 text-white border-gray-600" />
+                  <Input id="contact-email" type="email" placeholder="Twój email" required />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="contact-message">Wiadomość</Label>
-                  <Textarea id="contact-message" placeholder="Twoja wiadomość" required className="bg-gray-700 text-white border-gray-600" />
+                  <Textarea id="contact-message" placeholder="Twoja wiadomość" required />
                 </div>
-                <Button type="submit" className="text-white hover:text-red-500">Wyślij wiadomość</Button>
+                <Button type="submit">Wyślij wiadomość</Button>
               </form>
             </CardContent>
           </Card>
@@ -876,25 +714,24 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col">
-      <header className="bg-gray-900 shadow p-4">
+    <div className="min-h-screen bg-gray-100 flex flex-col">
+      <header className="bg-white shadow p-4">
         <nav className="flex justify-between items-center max-w-6xl mx-auto">
-          <h1 className="text-2xl font-bold text-white">Cytaty z filmów</h1>
+          <h1 className="text-2xl font-bold text-gray-800">Cytaty z filmów</h1>
           <div className="flex space-x-4">
-            <Button variant="ghost" className="text-white hover:text-red-500" onClick={() => setActiveTab('home')}>Strona główna</Button>
-            <Button variant="ghost" className="text-white hover:text-red-500" onClick={() => setActiveTab('discussions')}>Forum</Button>
-            <Button variant="ghost" className="text-white hover:text-red-500" onClick={() => setActiveTab('meme-generator')}>Generator memów</Button>
-            <Button variant="ghost" className="text-white hover:text-red-500" onClick={() => setActiveTab('quizzes')}>Quizy</Button>
-            <Button variant="ghost" className="text-white hover:text-red-500" onClick={() => setActiveTab('contact')}>Kontakt</Button>
+            <Button variant="ghost" onClick={() => setActiveTab('home')}>Strona główna</Button>
+            <Button variant="ghost" onClick={() => setActiveTab('discussions')}>Forum</Button>
+            <Button variant="ghost" onClick={() => setActiveTab('meme-generator')}>Generator memów</Button>
+            <Button variant="ghost" onClick={() => setActiveTab('contact')}>Kontakt</Button>
             {isLoggedIn ? (
               <>
-                <Button variant="ghost" className="text-white hover:text-red-500" onClick={() => setActiveTab('profile')}>Profil</Button>
-                <Button variant="ghost" className="text-white hover:text-red-500" onClick={handleLogout}>Wyloguj</Button>
+                <Button variant="ghost" onClick={() => setActiveTab('profile')}>Profil</Button>
+                <Button variant="ghost" onClick={handleLogout}>Wyloguj</Button>
               </>
             ) : (
               <>
-                <Button variant="ghost" className="text-white hover:text-red-500" onClick={() => setActiveTab('login')}>Zaloguj</Button>
-                <Button variant="ghost" className="text-white hover:text-red-500" onClick={() => setActiveTab('register')}>Zarejestruj</Button>
+                <Button variant="ghost" onClick={() => setActiveTab('login')}>Zaloguj</Button>
+                <Button variant="ghost" onClick={() => setActiveTab('register')}>Zarejestruj</Button>
               </>
             )}
           </div>
@@ -905,7 +742,7 @@ export default function Home() {
         {renderContent()}
       </main>
 
-      <footer className="bg-gray-900 text-white py-6">
+      <footer className="bg-gray-800 text-white py-6">
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
@@ -915,36 +752,35 @@ export default function Home() {
             <div>
               <h3 className="text-lg font-semibold mb-2">Szybkie linki</h3>
               <ul className="space-y-2">
-                <li><a href="#" onClick={() => setActiveTab('home')} className="hover:text-red-500">Strona główna</a></li>
-                <li><a href="#" onClick={() => setActiveTab('discussions')} className="hover:text-red-500">Forum</a></li>
-                <li><a href="#" onClick={() => setActiveTab('meme-generator')} className="hover:text-red-500">Generator memów</a></li>
-                <li><a href="#" onClick={() => setActiveTab('meme-wall')} className="hover:text-red-500">Ściana memów</a></li>
-                <li><a href="#" onClick={() => setActiveTab('quizzes')} className="hover:text-red-500">Quizy</a></li>
+                <li><a href="#" onClick={() => setActiveTab('home')} className="hover:text-gray-300">Strona główna</a></li>
+                <li><a href="#" onClick={() => setActiveTab('discussions')} className="hover:text-gray-300">Forum</a></li>
+                <li><a href="#" onClick={() => setActiveTab('meme-generator')} className="hover:text-gray-300">Generator memów</a></li>
+                <li><a href="#" onClick={() => setActiveTab('meme-wall')} className="hover:text-gray-300">Ściana memów</a></li>
               </ul>
             </div>
             <div>
               <h3 className="text-lg font-semibold mb-2">Informacje prawne</h3>
               <ul className="space-y-2">
-                <li><a href="#" className="hover:text-red-500">Regulamin</a></li>
-                <li><a href="#" className="hover:text-red-500">Polityka prywatności</a></li>
-                <li><a href="#" onClick={() => setActiveTab('contact')} className="hover:text-red-500">Kontakt</a></li>
+                <li><a href="#" className="hover:text-gray-300">Regulamin</a></li>
+                <li><a href="#" className="hover:text-gray-300">Polityka prywatności</a></li>
+                <li><a href="#" onClick={() => setActiveTab('contact')} className="hover:text-gray-300">Kontakt</a></li>
               </ul>
             </div>
           </div>
           <div className="mt-8 flex justify-center space-x-6">
-            <a href="#" className="text-gray-400 hover:text-red-500">
+            <a href="#" className="text-gray-400 hover:text-white">
               <span className="sr-only">Facebook</span>
               <Facebook className="h-6 w-6" />
             </a>
-            <a href="#" className="text-gray-400 hover:text-red-500">
+            <a href="#" className="text-gray-400 hover:text-white">
               <span className="sr-only">Instagram</span>
               <Instagram className="h-6 w-6" />
             </a>
-            <a href="#" className="text-gray-400 hover:text-red-500">
+            <a href="#" className="text-gray-400 hover:text-white">
               <span className="sr-only">Twitter</span>
               <Twitter className="h-6 w-6" />
             </a>
-            <a href="#" className="text-gray-400 hover:text-red-500">
+            <a href="#" className="text-gray-400 hover:text-white">
               <span className="sr-only">YouTube</span>
               <Youtube className="h-6 w-6" />
             </a>
@@ -967,9 +803,9 @@ function DiscussionPreview({ title, author, replies, lastReply }: { title: strin
       </Avatar>
       <div className="flex-1">
         <h3 className="font-semibold">{title}</h3>
-        <p className="text-sm text-gray-400">autor: {author}</p>
+        <p className="text-sm text-gray-500">autor: {author}</p>
       </div>
-      <div className="text-right text-sm text-gray-400">
+      <div className="text-right text-sm text-gray-500">
         <p>{replies} odpowiedzi</p>
         <p>Ostatnia odpowiedź {lastReply}</p>
       </div>
