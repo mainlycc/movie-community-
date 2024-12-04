@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Slider } from "@/components/ui/slider"
 import { Textarea } from "@/components/ui/textarea"
-import { Star, Youtube, Instagram, Facebook, Twitter, Camera } from 'lucide-react'
+import { Star, Youtube, Instagram, Facebook, Twitter, Camera, Heart, Share } from 'lucide-react'
 import Image from 'next/image'
 
 type User = {
@@ -52,6 +52,8 @@ type Meme = {
   text: string;
   hashtags: string[];
   author: string;
+  likes: number;
+  isLiked?: boolean;
 }
 
 type Quiz = {
@@ -95,11 +97,29 @@ const upcomingPremieres: UpcomingPremiere[] = [
   { id: 5, title: 'Deadpool 3', releaseDate: '26 lipca 2024', genre: 'Akcja/Komedia' },
 ]
 
+const quizRanking = [
+  { id: "1", username: "FilmManiak", points: 2500 },
+  { id: "2", username: "KinoExpert", points: 2100 },
+  { id: "3", username: "MovieBuff", points: 1800 },
+  { id: "4", username: "QuizKing", points: 1500 },
+  { id: "5", username: "CinemaLover", points: 1200 }
+]
+
 export default function Home() {
   const [activeTab, setActiveTab] = useState('home')
   const [memeText, setMemeText] = useState('')
   const [memeImage, setMemeImage] = useState<string | null>(null)
-  const [createdMemes, setCreatedMemes] = useState<Meme[]>([])
+  const [createdMemes, setCreatedMemes] = useState<Meme[]>([
+    {
+      id: '1',
+      imageUrl: '/Zrzut ekranu 2024-12-04 125458.png',
+      text: 'Kiedy spotykasz swojego sobowtóra',
+      hashtags: ['#spiderman', '#meme', '#pointing', '#classic'],
+      author: 'MarvelFan',
+      likes: 0,
+      isLiked: false
+    }
+  ])
   const [quizzes, setQuizzes] = useState<Quiz[]>([
     {
       id: '1',
@@ -199,7 +219,9 @@ export default function Home() {
         imageUrl: memeDataUrl,
         text: memeText,
         hashtags: memeHashtags,
-        author: user.username
+        author: user.username,
+        likes: 0,
+        isLiked: false
       }
       setCreatedMemes(prevMemes => [...prevMemes, newMeme])
       setMemeText('')
@@ -327,59 +349,105 @@ export default function Home() {
       case 'home':
         return (
           <div className="space-y-8">
-            <Card className="bg-gray-800 text-white">
-              <CardHeader>
-                <CardTitle>Witaj w Cytaty z filmów</CardTitle>
-                <CardDescription>Twoja społeczność dla wszystkiego, co związane z kinem</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <h3 className="text-lg font-semibold mb-2">Najlepsze filmy tego tygodnia</h3>
-                <ul className="space-y-2">
-                  {popularMovies.map((movie) => (
-                    <li key={movie.id} className="flex items-center justify-between">
-                      <span>{movie.title}</span>
-                      <span className="flex items-center">
-                        <Star className="w-4 h-4 text-yellow-400 mr-1" />
-                        {movie.rating}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-            <Card className="bg-gray-800 text-white">
-              <CardHeader>
-                <CardTitle>Ulubione cytaty filmowe tygodnia</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-4">
-                  {favoriteQuotes.map((quote) => (
-                    <li key={quote.id} className="border-b pb-2 last:border-b-0 last:pb-0">
-                      <p className="italic">"{quote.quote}"</p>
-                      <p className="text-sm text-gray-400">- {quote.character}, {quote.movie}</p>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-            <Card className="bg-gray-800 text-white">
-              <CardHeader>
-                <CardTitle>Nadchodzące premiery</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2">
-                  {upcomingPremieres.map((premiere) => (
-                    <li key={premiere.id} className="flex justify-between items-center">
-                      <div>
-                        <span className="font-semibold">{premiere.title}</span>
-                        <span className="text-sm text-gray-400 ml-2">({premiere.genre})</span>
+            {/* Pierwszy rząd - memy i cytaty obok siebie */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Karta z memami */}
+              <Card className="bg-gray-800 text-white h-full">
+                <CardHeader>
+                  <CardTitle>Najlepsze memy tego tygodnia</CardTitle>
+                  <CardDescription>Najpopularniejsze memy naszej społeczności</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 gap-4">
+                    {createdMemes.slice(0, 4).map((meme) => (
+                      <div key={meme.id} className="space-y-2">
+                        <div className="relative aspect-[16/12]">
+                          <Image 
+                            src={meme.imageUrl} 
+                            alt={`Mem od ${meme.author}`}
+                            fill
+                            className="object-cover rounded-md"
+                            sizes="(max-width: 768px) 100vw, 50vw"
+                          />
+                        </div>
+                        <div className="text-sm text-gray-400">
+                          <p>Autor: {meme.author}</p>
+                          <p>{meme.hashtags.join(' ')}</p>
+                        </div>
                       </div>
-                      <span className="text-sm">{premiere.releaseDate}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
+                    ))}
+                  </div>
+                </CardContent>
+                <CardFooter className="flex justify-center">
+                  <Button 
+                    variant="ghost" 
+                    className="text-white hover:text-red-500"
+                    onClick={() => setActiveTab('meme-wall')}
+                  >
+                    Zobacz więcej memów
+                  </Button>
+                </CardFooter>
+              </Card>
+
+              {/* Karta z cytatami */}
+              <Card className="bg-gray-800 text-white">
+                <CardHeader>
+                  <CardTitle>Ulubione cytaty filmowe tygodnia</CardTitle>
+                  <CardDescription>Najlepsze cytaty wybrane przez społeczność</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-4">
+                    {favoriteQuotes.map((quote) => (
+                      <li key={quote.id} className="border-b pb-2 last:border-b-0 last:pb-0">
+                        <p className="italic">"{quote.quote}"</p>
+                        <p className="text-sm text-gray-400">- {quote.character}, {quote.movie}</p>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Drugi rząd - popularne filmy i nadchodzące premiery */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Card className="bg-gray-800 text-white">
+                <CardHeader>
+                  <CardTitle>Najlepsze filmy tego tygodnia</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-2">
+                    {popularMovies.map((movie) => (
+                      <li key={movie.id} className="flex items-center justify-between">
+                        <span>{movie.title}</span>
+                        <span className="flex items-center">
+                          <Star className="w-4 h-4 text-yellow-400 mr-1" />
+                          {movie.rating}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gray-800 text-white">
+                <CardHeader>
+                  <CardTitle>Nadchodzące premiery</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-2">
+                    {upcomingPremieres.map((premiere) => (
+                      <li key={premiere.id} className="flex justify-between items-center">
+                        <div>
+                          <span className="font-semibold">{premiere.title}</span>
+                          <span className="text-sm text-gray-400 ml-2">({premiere.genre})</span>
+                        </div>
+                        <span className="text-sm">{premiere.releaseDate}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         )
       case 'discussions':
@@ -517,26 +585,54 @@ export default function Home() {
         return (
           <Card className="bg-gray-800 text-white">
             <CardHeader>
-              <CardTitle>Ściana memów</CardTitle>
-              <CardDescription>Zobacz najnowsze memy stworzone przez społeczność</CardDescription>
+              <CardTitle>Najlepsze memy</CardTitle>
+              <CardDescription>Zobacz najpopularniejsze memy naszej społeczności</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 gap-6">
                 {createdMemes.map((meme) => (
-                  <div key={meme.id} className="space-y-2">
-                    <Image 
-                      src={meme.imageUrl} 
-                      alt={`Mem społeczności ${meme.id}`}
-                      width={300}
-                      height={300}
-                      className="w-full h-auto rounded-lg shadow-md"
-                    />
-                    <div>
-                      <p className="text-sm text-gray-400">Autor: {meme.author}</p>
-                      <p>Musisz być zalogowany, aby tworzyć memy.</p>
-                      <p>&ldquo;Życie jest jak pudełko czekoladek - nigdy nie wiesz, co ci się trafi&rdquo;</p>
+                  <div key={meme.id} className="bg-gray-700 rounded-lg p-4 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold">Autor: {meme.author}</span>
+                      <div className="text-sm text-gray-400">{meme.hashtags.join(' ')}</div>
                     </div>
-                    <p className="text-sm">{meme.hashtags.join(' ')}</p>
+                    
+                    <div className="relative aspect-[16/9]">
+                      <Image 
+                        src={meme.imageUrl} 
+                        alt={`Mem od ${meme.author}`}
+                        fill
+                        className="object-cover rounded-lg"
+                      />
+                    </div>
+
+                    <div className="flex items-center space-x-4">
+                      <Button 
+                        variant="ghost" 
+                        className="flex items-center space-x-2"
+                        onClick={() => {
+                          const updatedMemes = createdMemes.map(m => 
+                            m.id === meme.id ? { ...m, likes: m.isLiked ? m.likes - 1 : m.likes + 1, isLiked: !m.isLiked } : m
+                          )
+                          setCreatedMemes(updatedMemes)
+                        }}
+                      >
+                        <Heart className={`w-5 h-5 ${meme.isLiked ? 'fill-red-500 text-red-500' : ''}`} />
+                        <span>{meme.likes || 0}</span>
+                      </Button>
+
+                      <Button 
+                        variant="ghost" 
+                        className="flex items-center space-x-2"
+                        onClick={() => {
+                          navigator.clipboard.writeText(`${window.location.origin}/meme/${meme.id}`)
+                          alert('Link skopiowany do schowka!')
+                        }}
+                      >
+                        <Share className="w-5 h-5" />
+                        <span>Udostępnij</span>
+                      </Button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -545,173 +641,176 @@ export default function Home() {
         )
       case 'quizzes':
         return (
-          <Card className="bg-gray-800 text-white">
-            <CardHeader>
-              <CardTitle>Quizy o cytatach filmowych</CardTitle>
-              <CardDescription>Sprawdź swoją wiedzę o słynnych cytatach z filmów</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                {quizzes.map((quiz) => (
-                  <div key={quiz.id} className="bg-gray-700 p-4 rounded-lg">
-                    <h3 className="text-lg font-semibold mb-2">{quiz.question}</h3>
-                    <ul className="space-y-2">
-                      {quiz.options.map((option, index) => (
-                        <li key={index} className="flex items-center">
-                          <input
-                            type="radio"
-                            id={`quiz-${quiz.id}-option-${index}`}
-                            name={`quiz-${quiz.id}`}
-                            className="mr-2"
-                          />
-                          <label htmlFor={`quiz-${quiz.id}-option-${index}`}>{option}</label>
-                        </li>
-                      ))}
-                    </ul>
-                    <p className="mt-2 text-sm text-gray-400">Film: {quiz.movie}</p>
-                    <p className="text-sm text-gray-400">Autor: {quiz.author}</p>
-                  </div>
-                ))}
-              </div>
-              {isLoggedIn && (
-                <div className="mt-8">
-                  <h3 className="text-xl font-semibold mb-4">Dodaj nowy quiz</h3>
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="quiz-question">Pytanie</Label>
-                      <Input
-                        id="quiz-question"
-                        value={newQuiz.question}
-                        onChange={(e) => setNewQuiz({...newQuiz, question: e.target.value})}
-                        placeholder="Wpisz pytanie"
-                        className="bg-gray-700 text-white border-gray-600"
-                      />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Lewa kolumna - Quizy */}
+            <Card className="bg-gray-800 text-white">
+              <CardHeader>
+                <CardTitle>Quizy o cytatach filmowych</CardTitle>
+                <CardDescription>Sprawdź swoją wiedzę o słynnych cytatach z filmów</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  {quizzes.map((quiz) => (
+                    <div key={quiz.id} className="bg-gray-700 p-4 rounded-lg">
+                      <h3 className="text-lg font-semibold mb-2">{quiz.question}</h3>
+                      <ul className="space-y-2">
+                        {quiz.options.map((option, index) => (
+                          <li key={index} className="flex items-center">
+                            <input
+                              type="radio"
+                              id={`quiz-${quiz.id}-option-${index}`}
+                              name={`quiz-${quiz.id}`}
+                              className="mr-2"
+                            />
+                            <label htmlFor={`quiz-${quiz.id}-option-${index}`}>{option}</label>
+                          </li>
+                        ))}
+                      </ul>
+                      <p className="mt-2 text-sm text-gray-400">Film: {quiz.movie}</p>
+                      <p className="text-sm text-gray-400">Autor: {quiz.author}</p>
                     </div>
-                    {newQuiz.options.map((option, index) => (
-                      <div key={index}>
-                        <Label htmlFor={`quiz-option-${index}`}>Opcja {index + 1}</Label>
-                        <Input
-                          id={`quiz-option-${index}`}
-                          value={option}
-                          onChange={(e) => {
-                            const newOptions = [...newQuiz.options]
-                            newOptions[index] = e.target.value
-                            setNewQuiz({...newQuiz, options: newOptions})
-                          }}
-                          placeholder={`Wpisz opcję ${index + 1}`}
-                          className="bg-gray-700 text-white border-gray-600"
-                        />
-                      </div>
-                    ))}
-                    <div>
-                      <Label htmlFor="quiz-correct-answer">Poprawna odpowiedź</Label>
-                      <Input
-                        id="quiz-correct-answer"
-                        value={newQuiz.correctAnswer}
-                        onChange={(e) => setNewQuiz({...newQuiz, correctAnswer: e.target.value})}
-                        placeholder="Wpisz poprawną odpowiedź"
-                        className="bg-gray-700 text-white border-gray-600"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="quiz-movie">Film</Label>
-                      <Input
-                        id="quiz-movie"
-                        value={newQuiz.movie}
-                        onChange={(e) => setNewQuiz({...newQuiz, movie: e.target.value})}
-                        placeholder="Wpisz tytuł filmu"
-                        className="bg-gray-700 text-white border-gray-600"
-                      />
-                    </div>
-                    <Button onClick={handleAddQuiz} className="text-white hover:text-red-500">Dodaj quiz</Button>
-                  </div>
+                  ))}
                 </div>
-              )}
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+
+            {/* Prawa kolumna - Ranking */}
+            <Card className="bg-gray-800 text-white">
+              <CardHeader>
+                <CardTitle>Ranking graczy</CardTitle>
+                <CardDescription>Najlepsi znawcy filmów</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {quizRanking.map((player, index) => (
+                    <div 
+                      key={player.id} 
+                      className="flex items-center justify-between p-4 bg-gray-700 rounded-lg"
+                    >
+                      <div className="flex items-center gap-4">
+                        <span className="text-2xl">
+                          {index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : `#${index + 1}`}
+                        </span>
+                        <span className="font-semibold">{player.username}</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-xl font-bold">{player.points}</span>
+                        <span className="text-sm text-gray-400"> pkt</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-6 p-4 bg-gray-700 rounded-lg">
+                  <h4 className="font-semibold mb-2">System punktacji</h4>
+                  <ul className="text-sm space-y-1 text-gray-300">
+                    <li>• Dobra odpowiedź: +100 pkt</li>
+                    <li>• Ukończenie quizu: +200 pkt</li>
+                    <li>• Stworzenie quizu: +300 pkt</li>
+                  </ul>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         )
       case 'login':
         return (
-          <Card className="bg-gray-800 text-white">
-            <CardHeader>
-              <CardTitle>Logowanie</CardTitle>
-              <CardDescription>Witaj z powrotem! Zaloguj się na swoje konto.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleLogin} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="username">Nazwa użytkownika</Label>
-                  <Input
-                    id="username"
-                    type="text"
-                    value={loginUsername}
-                    onChange={(e) => setLoginUsername(e.target.value)}
-                    required
-                    className="bg-gray-700 text-white border-gray-600"
-                  />
+          <div className="max-w-md mx-auto w-full">
+            <Card className="bg-gray-800 text-white">
+              <CardHeader>
+                <CardTitle>Logowanie</CardTitle>
+                <CardDescription>Witaj z powrotem! Zaloguj się na swoje konto.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleLogin} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="username">Nazwa użytkownika</Label>
+                    <Input
+                      id="username"
+                      type="text"
+                      value={loginUsername}
+                      onChange={(e) => setLoginUsername(e.target.value)}
+                      required
+                      className="bg-gray-700 text-white border-gray-600"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="password">Hasło</Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      value={loginPassword}
+                      onChange={(e) => setLoginPassword(e.target.value)}
+                      required
+                      className="bg-gray-700 text-white border-gray-600"
+                    />
+                  </div>
+                  <Button type="submit" className="w-full text-white hover:text-red-500">Zaloguj się</Button>
+                </form>
+              </CardContent>
+              <CardFooter className="flex flex-col space-y-2">
+                <div className="text-sm text-gray-400">
+                  Nie masz jeszcze konta?{' '}
+                  <Button 
+                    variant="link" 
+                    className="text-white hover:text-red-500 p-0"
+                    onClick={() => setActiveTab('register')}
+                  >
+                    Zarejestruj się tutaj
+                  </Button>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="password">Hasło</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    value={loginPassword}
-                    onChange={(e) => setLoginPassword(e.target.value)}
-                    required
-                    className="bg-gray-700 text-white border-gray-600"
-                  />
-                </div>
-                <Button type="submit" className="text-white hover:text-red-500">Zaloguj się</Button>
-              </form>
-            </CardContent>
-          </Card>
+              </CardFooter>
+            </Card>
+          </div>
         )
       case 'register':
         return (
-          <Card className="bg-gray-800 text-white">
-            <CardHeader>
-              <CardTitle>Rejestracja</CardTitle>
-              <CardDescription>Stwórz nowe konto, aby dołączyć do naszej społeczności.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleRegister} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="reg-username">Nazwa użytkownika</Label>
-                  <Input
-                    id="reg-username"
-                    type="text"
-                    value={registerUsername}
-                    onChange={(e) => setRegisterUsername(e.target.value)}
-                    required
-                    className="bg-gray-700 text-white border-gray-600"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="reg-email">Email</Label>
-                  <Input
-                    id="reg-email"
-                    type="email"
-                    value={registerEmail}
-                    onChange={(e) => setRegisterEmail(e.target.value)}
-                    required
-                    className="bg-gray-700 text-white border-gray-600"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="reg-password">Hasło</Label>
-                  <Input
-                    id="reg-password"
-                    type="password"
-                    value={registerPassword}
-                    onChange={(e) => setRegisterPassword(e.target.value)}
-                    required
-                    className="bg-gray-700 text-white border-gray-600"
-                  />
-                </div>
-                <Button type="submit" className="text-white hover:text-red-500">Zarejestruj się</Button>
-              </form>
-            </CardContent>
-          </Card>
+          <div className="max-w-md mx-auto w-full">
+            <Card className="bg-gray-800 text-white">
+              <CardHeader>
+                <CardTitle>Rejestracja</CardTitle>
+                <CardDescription>Stwórz nowe konto, aby dołączyć do naszej społeczności.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleRegister} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="reg-username">Nazwa użytkownika</Label>
+                    <Input
+                      id="reg-username"
+                      type="text"
+                      value={registerUsername}
+                      onChange={(e) => setRegisterUsername(e.target.value)}
+                      required
+                      className="bg-gray-700 text-white border-gray-600"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="reg-email">Email</Label>
+                    <Input
+                      id="reg-email"
+                      type="email"
+                      value={registerEmail}
+                      onChange={(e) => setRegisterEmail(e.target.value)}
+                      required
+                      className="bg-gray-700 text-white border-gray-600"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="reg-password">Hasło</Label>
+                    <Input
+                      id="reg-password"
+                      type="password"
+                      value={registerPassword}
+                      onChange={(e) => setRegisterPassword(e.target.value)}
+                      required
+                      className="bg-gray-700 text-white border-gray-600"
+                    />
+                  </div>
+                  <Button type="submit" className="text-white hover:text-red-500">Zarejestruj się</Button>
+                </form>
+              </CardContent>
+            </Card>
+          </div>
         )
       case 'profile':
         return (
@@ -846,29 +945,31 @@ export default function Home() {
         )
       case 'contact':
         return (
-          <Card className="bg-gray-800 text-white">
-            <CardHeader>
-              <CardTitle>Kontakt</CardTitle>
-              <CardDescription>Skontaktuj się z zespołem Cytaty z filmów</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="contact-name">Imię</Label>
-                  <Input id="contact-name" type="text" placeholder="Twoje imię" required className="bg-gray-700 text-white border-gray-600" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="contact-email">Email</Label>
-                  <Input id="contact-email" type="email" placeholder="Twój email" required className="bg-gray-700 text-white border-gray-600" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="contact-message">Wiadomość</Label>
-                  <Textarea id="contact-message" placeholder="Twoja wiadomość" required className="bg-gray-700 text-white border-gray-600" />
-                </div>
-                <Button type="submit" className="text-white hover:text-red-500">Wyślij wiadomość</Button>
-              </form>
-            </CardContent>
-          </Card>
+          <div className="max-w-md mx-auto w-full">
+            <Card className="bg-gray-800 text-white">
+              <CardHeader>
+                <CardTitle>Kontakt</CardTitle>
+                <CardDescription>Skontaktuj się z zespołem Cytaty z filmów</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="contact-name">Imię</Label>
+                    <Input id="contact-name" type="text" placeholder="Twoje imię" required className="bg-gray-700 text-white border-gray-600" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="contact-email">Email</Label>
+                    <Input id="contact-email" type="email" placeholder="Twój email" required className="bg-gray-700 text-white border-gray-600" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="contact-message">Wiadomość</Label>
+                    <Textarea id="contact-message" placeholder="Twoja wiadomość" required className="bg-gray-700 text-white border-gray-600" />
+                  </div>
+                  <Button type="submit" className="text-white hover:text-red-500">Wyślij wiadomość</Button>
+                </form>
+              </CardContent>
+            </Card>
+          </div>
         )
       default:
         return null
@@ -881,10 +982,36 @@ export default function Home() {
         <nav className="flex justify-between items-center max-w-6xl mx-auto">
           <h1 className="text-2xl font-bold text-white">Cytaty z filmów</h1>
           <div className="flex space-x-4">
-            <Button variant="ghost" className="text-white hover:text-red-500" onClick={() => setActiveTab('home')}>Strona główna</Button>
-            <Button variant="ghost" className="text-white hover:text-red-500" onClick={() => setActiveTab('discussions')}>Forum</Button>
-            <Button variant="ghost" className="text-white hover:text-red-500" onClick={() => setActiveTab('meme-generator')}>Generator memów</Button>
-            <Button variant="ghost" className="text-white hover:text-red-500" onClick={() => setActiveTab('quizzes')}>Quizy</Button>
+            <Button variant="ghost" className="text-white hover:text-red-500" onClick={() => setActiveTab('home')}>
+              Strona główna
+            </Button>
+            
+            {/* Dropdown dla memów */}
+            <div className="relative group">
+              <Button variant="ghost" className="text-white hover:text-red-500">
+                Memy
+              </Button>
+              <div className="absolute hidden group-hover:block w-48 bg-gray-800 rounded-md shadow-lg py-1 z-50">
+                <Button
+                  variant="ghost"
+                  className="w-full text-left px-4 py-2 text-white hover:bg-gray-700"
+                  onClick={() => setActiveTab('meme-generator')}
+                >
+                  Generator memów
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="w-full text-left px-4 py-2 text-white hover:bg-gray-700"
+                  onClick={() => setActiveTab('meme-wall')}
+                >
+                  Najlepsze memy
+                </Button>
+              </div>
+            </div>
+
+            <Button variant="ghost" className="text-white hover:text-red-500" onClick={() => setActiveTab('quizzes')}>
+              Quizy
+            </Button>
             <Button variant="ghost" className="text-white hover:text-red-500" onClick={() => setActiveTab('contact')}>Kontakt</Button>
             {isLoggedIn ? (
               <>
@@ -892,10 +1019,7 @@ export default function Home() {
                 <Button variant="ghost" className="text-white hover:text-red-500" onClick={handleLogout}>Wyloguj</Button>
               </>
             ) : (
-              <>
-                <Button variant="ghost" className="text-white hover:text-red-500" onClick={() => setActiveTab('login')}>Zaloguj</Button>
-                <Button variant="ghost" className="text-white hover:text-red-500" onClick={() => setActiveTab('register')}>Zarejestruj</Button>
-              </>
+              <Button variant="ghost" className="text-white hover:text-red-500" onClick={() => setActiveTab('login')}>Zaloguj</Button>
             )}
           </div>
         </nav>
