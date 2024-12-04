@@ -103,7 +103,7 @@ export default function Home() {
   const [quizzes, setQuizzes] = useState<Quiz[]>([
     {
       id: '1',
-      question: 'Kto powiedział: "Niech Moc będzie z tobą"?',
+      question: 'Kto powiedział: &ldquo;Niech Moc będzie z tobą&rdquo;?',
       options: ['Luke Skywalker', 'Obi-Wan Kenobi', 'Yoda', 'Han Solo'],
       correctAnswer: 'Obi-Wan Kenobi',
       movie: 'Gwiezdne Wojny',
@@ -111,7 +111,7 @@ export default function Home() {
     },
     {
       id: '2',
-      question: 'Z jakiego filmu pochodzi cytat: "Życie jest jak pudełko czekoladek - nigdy nie wiesz, co ci się trafi"?',
+      question: 'Z jakiego filmu pochodzi cytat: &ldquo;Życie jest jak pudełko czekoladek - nigdy nie wiesz, co ci się trafi&rdquo;?',
       options: ['Forrest Gump', 'Czekolada', 'Charlie i fabryka czekoladek', 'Amelia'],
       correctAnswer: 'Forrest Gump',
       movie: 'Forrest Gump',
