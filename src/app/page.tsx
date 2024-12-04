@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider"
 import { Textarea } from "@/components/ui/textarea"
 import { Film, MessageSquare, ImageIcon, Upload, User, Mail, Star, Youtube, Instagram, Facebook, Twitter, Camera, Hash } from 'lucide-react'
+import Image from 'next/image';
 
 type User = {
   username: string;
@@ -95,7 +96,7 @@ const upcomingPremieres: UpcomingPremiere[] = [
   { id: 5, title: "Deadpool 3", releaseDate: "26 lipca 2024", genre: "Akcja/Komedia" },
 ]
 
-export default function home() {
+export default function Home() {
   const [activeTab, setActiveTab] = useState('home')
   const [memeText, setMemeText] = useState('')
   const [memeImage, setMemeImage] = useState<string | null>(null)
@@ -524,7 +525,13 @@ export default function home() {
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 {createdMemes.map((meme) => (
                   <div key={meme.id} className="space-y-2">
-                    <img src={meme.imageUrl} alt={`Mem społeczności ${meme.id}`} className="w-full h-auto rounded-lg shadow-md" />
+                    <Image 
+                      src={meme.imageUrl} 
+                      alt={`Mem społeczności ${meme.id}`}
+                      width={300}
+                      height={300}
+                      className="w-full h-auto rounded-lg shadow-md"
+                    />
                     <p className="text-sm text-gray-400">Autor: {meme.author}</p>
                     <p className="text-sm">{meme.hashtags.join(' ')}</p>
                   </div>
