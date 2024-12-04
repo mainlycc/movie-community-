@@ -531,7 +531,11 @@ export default function Home() {
                       height={300}
                       className="w-full h-auto rounded-lg shadow-md"
                     />
-                    <p className="text-sm text-gray-400">Autor: {meme.author}</p>
+                    <div>
+                      <p className="text-sm text-gray-400">Autor: {meme.author}</p>
+                      <p>Musisz być zalogowany, aby tworzyć memy.</p>
+                      <p>&ldquo;Życie jest jak pudełko czekoladek - nigdy nie wiesz, co ci się trafi&rdquo;</p>
+                    </div>
                     <p className="text-sm">{meme.hashtags.join(' ')}</p>
                   </div>
                 ))}
