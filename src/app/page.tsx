@@ -147,7 +147,7 @@ export default function Home() {
     if (canvasRef.current && (memeImage || selectedTemplate)) {
       const ctx = canvasRef.current.getContext('2d')
       if (ctx) {
-        const img = new Image()
+        const img = document.createElement('img')
         img.onload = () => {
           ctx.clearRect(0, 0, 300, 300)
           const scale = imageScale / 100
@@ -430,7 +430,7 @@ export default function Home() {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="meme-template">Wybierz szablon</Label>
-                      <Select className="bg-gray-700 text-white" onValueChange={(value) => {
+                      <Select onValueChange={(value) => {
                         setSelectedTemplate(value)
                         setMemeImage(null)
                       }}>
@@ -476,7 +476,7 @@ export default function Home() {
                   </div>
                   <div>
                     <Label htmlFor="text-position">Pozycja tekstu</Label>
-                    <Select className="bg-gray-700 text-white" onValueChange={(value: string) => setTextPosition(value)}>
+                    <Select onValueChange={(value: string) => setTextPosition(value)}>
                       <SelectTrigger id="text-position">
                         <SelectValue placeholder="Wybierz pozycję tekstu" />
                       </SelectTrigger>
